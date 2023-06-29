@@ -1,0 +1,3 @@
+TODO:
+ - stop two nodes from overlapping
+ - no rules for how nodes should be placed, will be soft enforced by limiting where sheel can be placed

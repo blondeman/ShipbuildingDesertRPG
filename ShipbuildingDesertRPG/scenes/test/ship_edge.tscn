@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://di0rc56d1g7o"]
+
+[ext_resource type="Script" path="res://scripts/test/ShipEdge.gd" id="1_fkja0"]
+
+[node name="ship_edge" type="Line2D"]
+points = PackedVector2Array(95, 106, 488, 258)
+script = ExtResource("1_fkja0")
+
+[node name="Area2D" type="Area2D" parent="."]
+z_index = 1
+
+[connection signal="input_event" from="Area2D" to="." method="_on_area_2d_input_event"]

@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://dcg4t0n6skyus"]
+
+[ext_resource type="Texture2D" uid="uid://djo0tyqpvht6j" path="res://icon.svg" id="1_lyfdi"]
+[ext_resource type="Script" path="res://scripts/test/ShipMenuItem.gd" id="1_pp83a"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ltp1x"]
+size = Vector2(64, 64)
+
+[node name="ShipMenuItem" type="Area2D"]
+script = ExtResource("1_pp83a")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_lyfdi")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_ltp1x")
+
+[connection signal="input_event" from="." to="." method="_on_input_event"]
