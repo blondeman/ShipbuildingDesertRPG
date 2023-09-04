@@ -1,3 +1,7 @@
-[gd_scene format=3 uid="uid://dsnfwg8evwdit"]
+[gd_scene load_steps=2 format=3 uid="uid://dsnfwg8evwdit"]
+
+[ext_resource type="PackedScene" uid="uid://c5urt2cp4lf1h" path="res://scenes/test/ship_builder.tscn" id="1_tejq2"]
 
 [node name="Node2D" type="Node2D"]
+
+[node name="ship_builder" parent="." instance=ExtResource("1_tejq2")]
