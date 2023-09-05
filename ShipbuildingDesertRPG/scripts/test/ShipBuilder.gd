@@ -9,20 +9,22 @@ var selectedNode: ShipNode = null
 var shipNodes: Array = Array() #[front, end, node1 top, node1 bot, node2 top, node2 bot, ...]
 var shipEdges: Array = Array() #[edgeA, edgeB, ...]
 
+@export var middleWidth: int = 30
+
 func _ready():
-	AddFrontBackNodes()
+	AddFrontBackNodes(200, 600)
 	AddNode(Vector2(400, GetMiddle()+100))
 	AddEdge(shipNodes[0], shipNodes[2])
 	AddEdge(shipNodes[2], shipNodes[1])
 	
-func AddFrontBackNodes():
+func AddFrontBackNodes(frontPos: int, backPos: int):
 	var front = shipNodeScene.instantiate()
-	front.position = Vector2(200,GetMiddle())
+	front.position = Vector2(frontPos,GetMiddle())
 	front.shipBuilder = self
 	front.isMiddle = true
 	add_child(front)
 	var back = shipNodeScene.instantiate()
-	back.position = Vector2(600,GetMiddle())
+	back.position = Vector2(backPos,GetMiddle())
 	back.shipBuilder = self
 	back.isMiddle = true
 	add_child(back)
@@ -31,6 +33,10 @@ func AddFrontBackNodes():
 func _input(event):
 	if event.is_action_released("ship_drag") && selectedNode != null:
 		ReleaseNode()
+	if event.is_action_pressed("test"):
+		SaveBuild()
+	if event.is_action_pressed("test2"):
+		LoadBuild()
 
 func _process(delta):
 	if selectedNode != null:
@@ -38,10 +44,11 @@ func _process(delta):
 			selectedNode.position = ClampNodeMiddle(get_global_mouse_position())
 			UpdateNodeEdgesSimple(selectedNode)
 		else:
-			selectedNode.position = ClampNode(get_global_mouse_position())
-			GetOppositeNode(selectedNode).position = GetOppositePoint(ClampNode(get_global_mouse_position()))
+			var oppositeNode = GetOppositeNode(selectedNode)
+			selectedNode.position = ClampNodeSide(selectedNode, get_global_mouse_position())
+			oppositeNode.position = ClampNodeSide(oppositeNode, GetOppositePoint(get_global_mouse_position()))
 			UpdateNodeEdgesSimple(selectedNode)
-			UpdateNodeEdgesSimple(GetOppositeNode(selectedNode))
+			UpdateNodeEdgesSimple(oppositeNode)
 
 #EDGE FUNCTIONS
 
@@ -107,6 +114,8 @@ func DeleteNode(node: ShipNode):
 	var nodeB = null
 	var edgeB = null
 	
+	var oldEdge = null
+	
 	for edge in shipEdges:
 		if edge.nodeB == node:
 			edgeA = edge
@@ -114,7 +123,7 @@ func DeleteNode(node: ShipNode):
 		if edge.nodeA == node:
 			nodeA = edge.nodeB
 			nodeB = GetOppositeEdge(edge).nodeB
-			DeleteEdge(edge)
+			oldEdge = edge
 	
 	edgeA.nodeB = nodeA
 	edgeB.nodeB = nodeB
@@ -127,6 +136,8 @@ func DeleteNode(node: ShipNode):
 	
 	edgeA.UpdateCollision()
 	edgeB.UpdateCollision()
+	
+	DeleteEdge(oldEdge)
 
 func ReleaseNode():
 	if(selectedNode.isMiddle):
@@ -166,13 +177,23 @@ func ClampNode(pos: Vector2) -> Vector2:
 	var w = $CollisionShape2D.shape.size.x/2
 	var h = $CollisionShape2D.shape.size.y/2
 	return Vector2(clamp(pos.x, x - w, x + w), clamp(pos.y, y - h, y + h))
+
+func ClampNodeSide(node: ShipNode, pos: Vector2) -> Vector2:
+	var x = $CollisionShape2D.position.x
+	var y = $CollisionShape2D.position.y
+	var w = $CollisionShape2D.shape.size.x/2
+	var h = $CollisionShape2D.shape.size.y/2
 	
+	if IsNodeTop(node):
+		return Vector2(clamp(pos.x, x - w, x + w), clamp(pos.y, y + middleWidth, y + h))
+	else:
+		return Vector2(clamp(pos.x, x - w, x + w), clamp(pos.y, y - h, y - middleWidth))
+
 func ClampNodeMiddle(pos: Vector2) -> Vector2:
 	var x = $CollisionShape2D.position.x
 	var y = $CollisionShape2D.position.y
 	var w = $CollisionShape2D.shape.size.x/2
-	var h = 0
-	return Vector2(clamp(pos.x, x - w, x + w), clamp(pos.y, y - h, y + h))
+	return Vector2(clamp(pos.x, x - w, x + w), y)
 
 func GetMiddle() -> int:
 	return $CollisionShape2D.position.y
@@ -187,3 +208,60 @@ func GetOppositeNode(node: ShipNode) -> ShipNode:
 		return shipNodes[pos+1]
 	else:
 		return shipNodes[pos-1]
+
+func IsNodeTop(node: ShipNode) -> bool:
+	return shipNodes.find(node)%2==0
+	
+func IsEdgeTop(edge: ShipEdge) -> bool:
+	if !edge.nodeA.isMiddle:
+		return IsNodeTop(edge.nodeA)
+	else:
+		return IsNodeTop(edge.nodeB)
+
+func SaveBuild():
+	var nodes = []
+	var edges = []
+	
+	for node in shipNodes:
+		if(IsNodeTop(node) || node.isMiddle):
+			nodes.append(node.position.x)
+			nodes.append(node.position.y)
+	for edge in shipEdges:
+		if(IsEdgeTop(edge)):
+			edges.append(shipNodes.find(edge.nodeA))
+			edges.append(shipNodes.find(edge.nodeB))
+	
+	var json = {
+		"nodes":nodes,
+		"edges":edges
+		}
+	var file = FileAccess.open("user://ship_1.dat", FileAccess.WRITE)
+	file.store_string(JSON.stringify(json))
+
+func LoadBuild():
+	ClearBuild()
+	var file = FileAccess.open("user://ship_1.dat", FileAccess.READ)
+	var json = JSON.parse_string(file.get_as_text())
+	
+	var nodes = json.nodes
+	var edges = json.edges
+	
+	AddFrontBackNodes(nodes[0], nodes[2])
+	
+	for i in range(2, nodes.size()/2):
+		var x = nodes[i*2]
+		var y = nodes[i*2+1]
+		AddNode(Vector2(x,y))
+		
+	for i in range(0, edges.size()/2):
+		var nodeA = shipNodes[edges[i*2]]
+		var nodeB = shipNodes[edges[i*2+1]]
+		AddEdge(nodeA, nodeB)
+
+func ClearBuild():
+	for edge in shipEdges:
+		edge.queue_free()
+	shipEdges.clear()
+	for node in shipNodes:
+		node.queue_free()
+	shipNodes.clear()
