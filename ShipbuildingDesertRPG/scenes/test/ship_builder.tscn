@@ -11,3 +11,5 @@ script = ExtResource("1_1ycer")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(575, 300)
 shape = SubResource("RectangleShape2D_nnnfg")
+
+[node name="Polygon2D" type="Polygon2D" parent="."]

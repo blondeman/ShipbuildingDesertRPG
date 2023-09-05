@@ -16,6 +16,7 @@ func _ready():
 	AddNode(Vector2(400, GetMiddle()+100))
 	AddEdge(shipNodes[0], shipNodes[2])
 	AddEdge(shipNodes[2], shipNodes[1])
+	UpdatePolygon()
 	
 func AddFrontBackNodes(frontPos: int, backPos: int):
 	var front = shipNodeScene.instantiate()
@@ -45,10 +46,12 @@ func _process(delta):
 			UpdateNodeEdgesSimple(selectedNode)
 		else:
 			var oppositeNode = GetOppositeNode(selectedNode)
-			selectedNode.position = ClampNodeSide(selectedNode, get_global_mouse_position())
-			oppositeNode.position = ClampNodeSide(oppositeNode, GetOppositePoint(get_global_mouse_position()))
+			selectedNode.position = ClampNode(selectedNode, get_global_mouse_position())
+			oppositeNode.position = ClampNode(oppositeNode, GetOppositePoint(get_global_mouse_position()))
 			UpdateNodeEdgesSimple(selectedNode)
 			UpdateNodeEdgesSimple(oppositeNode)
+		
+		UpdatePolygon()
 
 #EDGE FUNCTIONS
 
@@ -71,12 +74,12 @@ func AddEdge(nodeA: ShipNode, nodeB: ShipNode):
 
 func UpdateNodeEdges(node: ShipNode):
 	for edge in shipEdges:
-		if edge.nodeA == node || edge.nodeB == node:
+		if edge.HasNode(node):
 			edge.UpdateCollision()
 
 func UpdateNodeEdgesSimple(node: ShipNode):
 	for edge in shipEdges:
-		if edge.nodeA == node || edge.nodeB == node:
+		if edge.HasNode(node):
 			edge.Update()
 
 func SplitEdge(edge: ShipEdge):
@@ -100,6 +103,12 @@ func GetOppositeEdge(edge: ShipEdge) -> ShipEdge:
 		return shipEdges[pos+1]
 	else:
 		return shipEdges[pos-1]
+
+func IsEdgeTop(edge: ShipEdge) -> bool:
+	if !edge.nodeA.isMiddle:
+		return IsNodeTop(edge.nodeA)
+	else:
+		return IsNodeTop(edge.nodeB)
 
 #NODE FUNCTIONS
 
@@ -144,9 +153,9 @@ func ReleaseNode():
 		selectedNode.position = ClampNodeMiddle(selectedNode.position)
 		UpdateNodeEdges(selectedNode)
 	else:
-		selectedNode.position = ClampNode(selectedNode.position)
+		selectedNode.position = ClampPosition(selectedNode.position)
 		UpdateNodeEdges(selectedNode)
-		GetOppositeNode(selectedNode).position = ClampNode(GetOppositePoint(selectedNode.position))
+		GetOppositeNode(selectedNode).position = ClampPosition(GetOppositePoint(selectedNode.position))
 		UpdateNodeEdges(GetOppositeNode(selectedNode))
 		
 	selectedNode = null
@@ -171,14 +180,7 @@ func AddNode(position: Vector2) -> ShipNode:
 		
 	return nodeA
 
-func ClampNode(pos: Vector2) -> Vector2:
-	var x = $CollisionShape2D.position.x
-	var y = $CollisionShape2D.position.y
-	var w = $CollisionShape2D.shape.size.x/2
-	var h = $CollisionShape2D.shape.size.y/2
-	return Vector2(clamp(pos.x, x - w, x + w), clamp(pos.y, y - h, y + h))
-
-func ClampNodeSide(node: ShipNode, pos: Vector2) -> Vector2:
+func ClampNode(node: ShipNode, pos: Vector2) -> Vector2:
 	var x = $CollisionShape2D.position.x
 	var y = $CollisionShape2D.position.y
 	var w = $CollisionShape2D.shape.size.x/2
@@ -195,12 +197,6 @@ func ClampNodeMiddle(pos: Vector2) -> Vector2:
 	var w = $CollisionShape2D.shape.size.x/2
 	return Vector2(clamp(pos.x, x - w, x + w), y)
 
-func GetMiddle() -> int:
-	return $CollisionShape2D.position.y
-
-func GetOppositePoint(position: Vector2) -> Vector2:
-	return Vector2(position.x, GetMiddle() - position.y + GetMiddle())
-
 func GetOppositeNode(node: ShipNode) -> ShipNode:
 	if(node.isMiddle): return node
 	var pos: int = shipNodes.find(node)
@@ -211,12 +207,60 @@ func GetOppositeNode(node: ShipNode) -> ShipNode:
 
 func IsNodeTop(node: ShipNode) -> bool:
 	return shipNodes.find(node)%2==0
+
+#POLYGON FUNCTION
+
+func UpdatePolygon():
+	var startNode: ShipNode = shipNodes[0]
+	var currentNode: ShipNode = GetNextNode(startNode, null)
+	var previousNode: ShipNode = startNode
 	
-func IsEdgeTop(edge: ShipEdge) -> bool:
-	if !edge.nodeA.isMiddle:
-		return IsNodeTop(edge.nodeA)
+	var nodes: Array = []
+	nodes.append(startNode.position)
+	
+	while currentNode!=startNode:
+		nodes.append(currentNode.position)
+		var nextNode = GetNextNode(currentNode, previousNode)
+		previousNode = currentNode
+		currentNode = nextNode
+	
+	$Polygon2D.polygon = nodes
+
+func GetNextNode(node: ShipNode, previousNode: ShipNode) -> ShipNode:
+	if(previousNode==null): return GetNodeEdges(node)[0].GetOppositeNode(node)
+	
+	var edges = GetNodeEdges(node)
+	if edges[0].HasNode(previousNode):
+		return edges[1].GetOppositeNode(node)
 	else:
-		return IsNodeTop(edge.nodeB)
+		return edges[0].GetOppositeNode(node)
+	
+	return null
+
+func GetNodeEdges(node: ShipNode) -> Array:
+	var edges = Array()
+	for edge in shipEdges:
+		if edge.HasNode(node):
+			edges.append(edge)
+	return edges
+
+#GENERAL FUNCTIONS
+	
+func ClampPosition(pos: Vector2) -> Vector2:
+	var x = $CollisionShape2D.position.x
+	var y = $CollisionShape2D.position.y
+	var w = $CollisionShape2D.shape.size.x/2
+	var h = $CollisionShape2D.shape.size.y/2
+	return Vector2(clamp(pos.x, x - w, x + w), clamp(pos.y, y - h, y + h))
+
+	
+func GetMiddle() -> int:
+	return $CollisionShape2D.position.y
+
+func GetOppositePoint(position: Vector2) -> Vector2:
+	return Vector2(position.x, GetMiddle() - position.y + GetMiddle())
+
+#BUILD FUNCTIONS
 
 func SaveBuild():
 	var nodes = []
@@ -257,6 +301,8 @@ func LoadBuild():
 		var nodeA = shipNodes[edges[i*2]]
 		var nodeB = shipNodes[edges[i*2+1]]
 		AddEdge(nodeA, nodeB)
+		
+	UpdatePolygon()
 
 func ClearBuild():
 	for edge in shipEdges:

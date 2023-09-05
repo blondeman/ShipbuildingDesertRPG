@@ -5,6 +5,17 @@ var shipBuilder: ShipBuilder = null
 var nodeA: ShipNode = null
 var nodeB: ShipNode = null
 
+func GetOppositeNode(node: ShipNode) -> ShipNode:
+	if nodeA == node:
+		return nodeB
+	else:
+		return nodeA
+
+func HasNode(node: ShipNode) -> bool:
+	if nodeA == node || nodeB == node:
+		return true
+	return false
+
 func Update():
 	if nodeA != null && nodeB != null:
 		points = [nodeA.position, nodeB.position]
