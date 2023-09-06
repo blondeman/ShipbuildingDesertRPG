@@ -5,6 +5,18 @@ var shipBuilder: ShipBuilder = null
 var nodeA: ShipNode = null
 var nodeB: ShipNode = null
 
+var nodeVisibilityDistance: int = 50
+var maxOpacityScale: int = 2 #a value of 3 means it will be at full 1/3 of the way there
+
+func _process(delta):
+	if get_global_mouse_position().distance_to($handle.position) <= nodeVisibilityDistance:
+		$handle.visible = true
+		var d = get_global_mouse_position().distance_to($handle.position)/nodeVisibilityDistance
+		var t = -maxOpacityScale * d + maxOpacityScale
+		$handle/Sprite2D.modulate.a = t
+	else:
+		$handle.visible = false
+
 func GetOppositeNode(node: ShipNode) -> ShipNode:
 	if nodeA == node:
 		return nodeB
@@ -33,7 +45,7 @@ func SetCollision():
 		new_shape.position = (points[i] + points[i + 1]) / 2
 		new_shape.rotation = points[i].direction_to(points[i + 1]).angle()
 		var length = points[i].distance_to(points[i + 1])
-		rect.extents = Vector2(length / 2, 10)
+		rect.extents = Vector2(length / 2, width)
 		new_shape.shape = rect
 
 func GetMiddle() -> Vector2:

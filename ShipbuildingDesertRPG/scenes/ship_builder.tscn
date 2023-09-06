@@ -1,12 +1,13 @@
-[gd_scene load_steps=3 format=3 uid="uid://c5urt2cp4lf1h"]
+[gd_scene load_steps=3 format=3 uid="uid://cchu0jn0tpveg"]
 
-[ext_resource type="Script" path="res://scripts/test/ShipBuilder.gd" id="1_1ycer"]
+[ext_resource type="Script" path="res://scripts/ShipBuilder.gd" id="1_bpwc4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nnnfg"]
 size = Vector2(900, 500)
 
 [node name="ship_builder" type="Area2D"]
-script = ExtResource("1_1ycer")
+script = ExtResource("1_bpwc4")
+middleWidth = 15
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(575, 300)

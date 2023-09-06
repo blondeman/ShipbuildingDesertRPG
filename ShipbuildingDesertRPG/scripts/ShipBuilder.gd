@@ -1,22 +1,33 @@
 extends Area2D
 class_name ShipBuilder
 
-var shipNodeScene = preload("res://scenes/test/ship_node.tscn")
-var shipEdgeScene = preload("res://scenes/test/ship_edge.tscn")
+var shipNodeScene = preload("res://scenes/ship_node.tscn")
+var shipEdgeScene = preload("res://scenes/ship_edge.tscn")
 
 var selectedNode: ShipNode = null
 
 var shipNodes: Array = Array() #[front, end, node1 top, node1 bot, node2 top, node2 bot, ...]
 var shipEdges: Array = Array() #[edgeA, edgeB, ...]
 
+@export var camera: Camera2D
 @export var middleWidth: int = 30
+@export var zonePadding: int = 100
 
 func _ready():
-	AddFrontBackNodes(200, 600)
-	AddNode(Vector2(400, GetMiddle()+100))
+	SetZonePadding()
+	AddFrontBackNodes(-200, 200)
+	AddNode(Vector2(0, GetMiddle()+100))
 	AddEdge(shipNodes[0], shipNodes[2])
 	AddEdge(shipNodes[2], shipNodes[1])
 	UpdatePolygon()
+	
+func SetZonePadding():
+	if camera==null:return
+	var screenSize = get_viewport_rect().size
+	$CollisionShape2D.position.x = camera.position.x
+	$CollisionShape2D.position.y = camera.position.y
+	$CollisionShape2D.shape.size.x = screenSize.x - 2 * zonePadding
+	$CollisionShape2D.shape.size.y = screenSize.y - 2 * zonePadding
 	
 func AddFrontBackNodes(frontPos: int, backPos: int):
 	var front = shipNodeScene.instantiate()
@@ -83,6 +94,8 @@ func UpdateNodeEdgesSimple(node: ShipNode):
 			edge.Update()
 
 func SplitEdge(edge: ShipEdge):
+	if selectedNode!=null:return
+	
 	var node: ShipNode = AddNode(edge.GetMiddle())
 	AddEdge(edge.nodeA, node)
 	AddEdge(node, edge.nodeB)

@@ -1,13 +1,14 @@
-[gd_scene load_steps=4 format=3 uid="uid://di0rc56d1g7o"]
+[gd_scene load_steps=4 format=3 uid="uid://b33yb8g0fkj8q"]
 
-[ext_resource type="Script" path="res://scripts/test/ShipEdge.gd" id="1_fkja0"]
-[ext_resource type="Texture2D" uid="uid://djo0tyqpvht6j" path="res://icon.svg" id="2_etbkh"]
+[ext_resource type="Script" path="res://scripts/ShipEdge.gd" id="1_glfw2"]
+[ext_resource type="Texture2D" uid="uid://btx8pk7q6chrm" path="res://handle.png" id="2_8xx2x"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_b63li"]
 
 [node name="ship_edge" type="Line2D"]
 points = PackedVector2Array(95, 106, 488, 258)
-script = ExtResource("1_fkja0")
+width = 1.0
+script = ExtResource("1_glfw2")
 
 [node name="edge_collision" type="Area2D" parent="."]
 z_index = 1
@@ -16,8 +17,7 @@ input_pickable = false
 [node name="handle" type="Area2D" parent="."]
 
 [node name="Sprite2D" type="Sprite2D" parent="handle"]
-scale = Vector2(0.15, 0.15)
-texture = ExtResource("2_etbkh")
+texture = ExtResource("2_8xx2x")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="handle"]
 shape = SubResource("CircleShape2D_b63li")
