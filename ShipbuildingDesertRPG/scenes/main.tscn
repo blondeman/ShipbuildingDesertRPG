@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://cchu0jn0tpveg" path="res://scenes/ship_builder.tscn" id="1_tejq2"]
 [ext_resource type="PackedScene" uid="uid://c33x0h4arsssp" path="res://scenes/camera.tscn" id="2_s810v"]
-[ext_resource type="PackedScene" uid="uid://cw0ba5dme65gy" path="res://scenes/player_topdown.tscn" id="3_7qh3w"]
+[ext_resource type="PackedScene" uid="uid://dfl64c2qwf702" path="res://scenes/player_topdown.tscn" id="3_7qh3w"]
 
 [node name="Node2D" type="Node2D"]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d0c54bp58qapt"
-path="res://.godot/imported/characterturnaround.png-f7d4273f706b178496b1d1f919206e75.ctex"
+uid="uid://x4rlja078w7t"
+path="res://.godot/imported/characterRun-NE.png-6c8a658677e57050bfe8bc53d50bac04.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://characterturnaround.png"
-dest_files=["res://.godot/imported/characterturnaround.png-f7d4273f706b178496b1d1f919206e75.ctex"]
+source_file="res://art/characters/player/characterRun-NE.png"
+dest_files=["res://.godot/imported/characterRun-NE.png-6c8a658677e57050bfe8bc53d50bac04.ctex"]
 
 [params]
 
@@ -31,4 +31,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=1
+detect_3d/compress_to=0

@@ -38,6 +38,9 @@ func UpdateCollision():
 	SetCollision()
 
 func SetCollision():
+	for child in $edge_collision.get_children(false):
+		$edge_collision.remove_child(child)
+	
 	for i in points.size() - 1:
 		var new_shape = CollisionShape2D.new()
 		$edge_collision.add_child(new_shape)

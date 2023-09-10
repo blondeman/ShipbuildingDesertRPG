@@ -1,17 +1,17 @@
-[gd_scene load_steps=4 format=3 uid="uid://b33yb8g0fkj8q"]
+[gd_scene load_steps=4 format=3 uid="uid://ffnxsxgiswkm"]
 
-[ext_resource type="Script" path="res://scripts/ShipEdge.gd" id="1_glfw2"]
-[ext_resource type="Texture2D" uid="uid://cma64kwupq5mk" path="res://splithandle.png" id="2_tr5o5"]
+[ext_resource type="Script" path="res://scripts/ShipEdge.gd" id="1_8hlfg"]
+[ext_resource type="Texture2D" uid="uid://cma64kwupq5mk" path="res://art/splithandle.png" id="2_tr5o5"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_b63li"]
+radius = 5.0
 
 [node name="ship_edge" type="Line2D"]
 width = 1.0
-script = ExtResource("1_glfw2")
+script = ExtResource("1_8hlfg")
 
-[node name="edge_collision" type="Area2D" parent="."]
+[node name="edge_collision" type="StaticBody2D" parent="."]
 z_index = 1
-input_pickable = false
 
 [node name="handle" type="Area2D" parent="."]
 

@@ -160,6 +160,7 @@ func DeleteNode(node: ShipNode):
 	edgeB.UpdateCollision()
 	
 	DeleteEdge(oldEdge)
+	UpdatePolygon()
 
 func ReleaseNode():
 	if(selectedNode.isMiddle):

@@ -1,82 +1,19 @@
-[gd_scene load_steps=13 format=3 uid="uid://cw0ba5dme65gy"]
+[gd_scene load_steps=4 format=3 uid="uid://dfl64c2qwf702"]
 
-[ext_resource type="Texture2D" uid="uid://d0c54bp58qapt" path="res://characterturnaround.png" id="1_3381a"]
 [ext_resource type="Script" path="res://scenes/PlayerTopDown.gd" id="1_lbow2"]
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_gmy55"]
-atlas = ExtResource("1_3381a")
-region = Rect2(0, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_npdhl"]
-atlas = ExtResource("1_3381a")
-region = Rect2(32, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_716dl"]
-atlas = ExtResource("1_3381a")
-region = Rect2(64, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_wl0e0"]
-atlas = ExtResource("1_3381a")
-region = Rect2(96, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_ybk36"]
-atlas = ExtResource("1_3381a")
-region = Rect2(128, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_qml07"]
-atlas = ExtResource("1_3381a")
-region = Rect2(160, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_5fepo"]
-atlas = ExtResource("1_3381a")
-region = Rect2(192, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_23408"]
-atlas = ExtResource("1_3381a")
-region = Rect2(224, 0, 32, 32)
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_qdh04"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_gmy55")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_npdhl")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_716dl")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_wl0e0")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_ybk36")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_qml07")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_5fepo")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_23408")
-}],
-"loop": true,
-"name": &"idle",
-"speed": 5.0
-}]
+[ext_resource type="SpriteFrames" uid="uid://bl7v11f16v14a" path="res://art/characters/player/playerAnimation.tres" id="2_xybey"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_b8gc7"]
 
 [node name="player" type="CharacterBody2D"]
 script = ExtResource("1_lbow2")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-sprite_frames = SubResource("SpriteFrames_qdh04")
-animation = &"idle"
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, 13)
 scale = Vector2(0.5, 0.25)
 shape = SubResource("CircleShape2D_b8gc7")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+z_index = 3
+sprite_frames = ExtResource("2_xybey")
+animation = &"characterRun-SW"
